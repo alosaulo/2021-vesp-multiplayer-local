@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public int playerNumber;
+
     public float speed;
 
     Rigidbody2D rigidbody2D;
@@ -17,11 +19,11 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float hAxis = Input.GetAxisRaw("Horizontal");
-        float vAxis = Input.GetAxisRaw("Vertical");
+        float hAxis = Input.GetAxisRaw("HorizontalP"+playerNumber);
+        float vAxis = Input.GetAxisRaw("VerticalP"+playerNumber);
 
-        Vector2 newPos = new Vector2(hAxis, vAxis) * speed;
+        Vector2 newPos = new Vector2(hAxis, vAxis);
 
-        rigidbody2D.velocity = newPos.normalized;
+        rigidbody2D.velocity = newPos.normalized * speed;
     }
 }
