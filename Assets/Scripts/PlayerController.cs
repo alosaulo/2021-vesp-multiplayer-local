@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    bool knockback = false;
+    float knockbackTime;
+
+    public float health;
+
     public int playerNumber;
 
     public float speed;
@@ -69,18 +74,26 @@ public class PlayerController : MonoBehaviour
             countAtkDelay += Time.fixedDeltaTime;
         }
 
+        if (knockback == true) {
+            knockbackTime += Time.fixedDeltaTime;
+            if (knockbackTime > 1) {
+                knockback = false;
+                knockbackTime = 0;
+            }
+        }
+
     }
 
     private void FixedUpdate()
     {
         Vector2 newPos = new Vector2(hAxis, vAxis).normalized * speed * Time.fixedDeltaTime;
-
-        rigidbody2D.velocity = newPos;
+        if(knockback == false) { 
+            rigidbody2D.velocity = newPos;
         
-        animator.SetFloat("Y", lastY);
+            animator.SetFloat("Y", lastY);
 
-        animator.SetFloat("X", lastX);
-
+            animator.SetFloat("X", lastX);
+        }
     }
 
     string currentAnimation;
@@ -93,6 +106,30 @@ public class PlayerController : MonoBehaviour
 
     public void PlayMovimentoAnimation() {
         PlayAnimation("Movimento");
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "AtkPlayer")
+        {
+            health--;
+            Knockback(collision.gameObject.transform.position);
+            if (health < 1)
+            {
+                PlayAnimation("Death");
+            }
+        }
+    }
+
+    public void DestroyGameObject() {
+        gameObject.SetActive(false);
+    }
+
+    void Knockback(Vector3 pos) {
+        knockback = true;
+        Vector2 dir = transform.position - pos;
+        Debug.DrawRay(pos,dir,Color.magenta,3);
+        rigidbody2D.AddForce(dir * 100);
     }
 
 }
