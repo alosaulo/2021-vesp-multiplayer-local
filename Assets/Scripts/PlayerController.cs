@@ -1,13 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+
+    GameManager gm;
+
+    public Image playerLifeImg;
+
     bool knockback = false;
     float knockbackTime;
 
     public float health;
+    public float maxHealth;
 
     public int playerNumber;
 
@@ -27,6 +34,8 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gm = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+        playerLifeImg = gm.GetLifeImage(playerNumber);
         rigidbody2D = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
     }
@@ -49,7 +58,7 @@ public class PlayerController : MonoBehaviour
 
         if (countAtkDelay > atkDelay)
         {
-            if (Input.GetButtonDown("Fire1"))
+            if (Input.GetButtonDown("Fire1P"+playerNumber))
             {
                 countAtkDelay = 0;
                 if (lastX > 0)
@@ -113,6 +122,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.tag == "AtkPlayer")
         {
             health--;
+            playerLifeImg.fillAmount = health / maxHealth;
             Knockback(collision.gameObject.transform.position);
             if (health < 1)
             {
