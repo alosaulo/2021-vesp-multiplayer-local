@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
 
     public Cinemachine.CinemachineVirtualCamera cvCam4All;
 
+    public Camera[] playersCam;
+
     public Transform[] playersPositions;
 
     public Image[] playersLifeImg;
@@ -28,7 +30,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        transform.position = cvCam4All.transform.position;
         GetPlayerDistance();
+        SplitScreen();
     }
 
     public Image GetLifeImage(int playerNumber) {
@@ -80,6 +84,38 @@ public class GameManager : MonoBehaviour
         yMin = float.MaxValue;
         xMax = float.MinValue;
         xMin = float.MaxValue;
+    }
+
+    bool split = false;
+    void SplitScreen() {
+        Vector2 vec = new Vector2(totalX, totalY);
+        for (int i = 0; i < playersPositions.Length; i++)
+        {
+            Vector2 playerPos = playersPositions[i].position;
+            if (Vector2.Distance(vec, playerPos) >= 4 &&
+                    split == false)
+            {
+                split = true;
+            }
+            else if (Vector2.Distance(vec, playerPos) <= 4) {
+                split = false;
+            }
+        }
+        if (split == true)
+        {
+            cvCam4All.gameObject.SetActive(false);
+            for (int i = 0; i < playersCam.Length; i++)
+            {
+                playersCam[i].gameObject.SetActive(true);
+            }
+        }
+        else {
+            cvCam4All.gameObject.SetActive(true);
+            for (int i = 0; i < playersCam.Length; i++)
+            {
+                playersCam[i].gameObject.SetActive(false);
+            }
+        }
     }
 
 }
